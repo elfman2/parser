@@ -22,6 +22,6 @@ expr ::= expr PLUS expr.
 expr ::= expr DIVIDE expr. 
 expr ::= expr TIMES expr. 
 expr ::= expr MINUS expr. 
-expr ::= DOUBLE. 
+expr ::= DOUBLE(B).  {printf("num %s\n",B->name);} 
 expr ::= ident.
 ident ::= IDENT(B).  {printf("ident %s\n",B->name);}

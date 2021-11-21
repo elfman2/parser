@@ -17,6 +17,7 @@ machine calc;
 action ident_tok {
    Node *n=malloc(sizeof(Node));
    n->name=malloc(te-ts+1);
+   n->type=IDENT;
    strncpy(n->name,ts,te-ts);
    n->name[te-ts]='\0';
    Parse(lparser,IDENT,n);
@@ -51,7 +52,12 @@ action closep_tok {
 }
 
 action number_tok{ 
-   Parse(lparser, DOUBLE, 0);
+   Node *n=malloc(sizeof(Node));
+   n->name=malloc(te-ts+1);
+   n->type=DOUBLE;
+   strncpy(n->name,ts,te-ts);
+   n->name[te-ts]='\0';
+   Parse(lparser, DOUBLE, n);
 }
 
 action equa_tok{
