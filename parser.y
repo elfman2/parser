@@ -2,23 +2,21 @@
 {
 #include <assert.h>
 #include "parser.h"
+#include "ast.h"
 }
+%token_type    {Node*}
 %parse_failure {
      fprintf(stderr,"Giving up.  Parser is hopelessly lost...\n");
 }
 %syntax_error{
-extern int lpos(void);
-extern char *data;
-fprintf(stderr,"syntax error...\n%s",data);
-int i;
-for (i=0;i<lpos();i++) fprintf(stderr," ");
-fprintf(stderr,"^~\n");
+extern void syntax_error(void);
+syntax_error();
 }
 %left PLUS MINUS.
 %left DIVIDE TIMES.
 program ::= statlist.  {printf("prog\n");}
 statlist ::= stat statlist.
-stat ::= ident EQUA expr SEMI.  {printf("statement\n");}
+stat ::= ident(B) EQUA expr SEMI. {printf("statement %s\n",B->name);}
 expr ::= OPENP expr CLOSEP.
 expr ::= expr PLUS expr. 
 expr ::= expr DIVIDE expr. 

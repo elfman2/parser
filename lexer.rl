@@ -2,17 +2,24 @@
 #include<stddef.h>
 #include<stdlib.h>
 #include "parser.h"
+#include "ast.h"
 #include <unistd.h>
+#include <string.h>
 void *ParseAlloc( void*(*malloc)(size_t) );
 void ParseFree(void *pParser, void(*free)(void*) );
 void Parse(void *pParser, int tokenCode, void*  token);
 void ParseTrace(FILE *stream, char *zPrefix);
 void* lparser;
+
 %%{
 
 machine calc;
 action ident_tok {
-   Parse(lparser,IDENT,0);
+   Node *n=malloc(sizeof(Node));
+   n->name=malloc(te-ts+1);
+   strncpy(n->name,ts,te-ts);
+   n->name[te-ts]='\0';
+   Parse(lparser,IDENT,n);
 }
 action semi_tok {
    //Terminate this calculation.
@@ -79,11 +86,16 @@ main := |*
 
 %% write data;
 static const char *ts;
-char *data=0;
-int lpos(void){
-return ts-data;
+static char *data=0;
+static inline int lpos(void){
+  return ts-data;
 }
-
+void syntax_error(void){
+  fprintf(stderr,"syntax error...\n%s",data);
+  int i;
+  for (i=0;i<lpos();i++) fprintf(stderr," ");
+  fprintf(stderr,"^~\n");
+}
 void main(int argc ,char *argv[]){
     int cs;
     int act;
