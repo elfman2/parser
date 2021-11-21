@@ -16,7 +16,7 @@ syntax_error();
 %left DIVIDE TIMES.
 program ::= statlist.  {printf("prog\n");}
 statlist ::= stat statlist.
-stat ::= ident(B) EQUA expr SEMI. {printf("statement %s\n",B->name);}
+stat ::= ident EQUA expr SEMI.
 expr ::= OPENP expr CLOSEP.
 expr ::= expr PLUS expr. 
 expr ::= expr DIVIDE expr. 
@@ -24,4 +24,4 @@ expr ::= expr TIMES expr.
 expr ::= expr MINUS expr. 
 expr ::= DOUBLE. 
 expr ::= ident.
-ident ::= IDENT. 
+ident ::= IDENT(B).  {printf("ident %s\n",B->name);}
