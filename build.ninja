@@ -1,0 +1,11 @@
+rule CC
+  command = gcc -W -g -o $out $in
+rule RL
+  command = ragel -o $out $in
+rule LE
+  command = ./lemon  $in > $out
+
+build lexer.c: RL lexer.rl
+build lexer: CC lexer.c parser.c | parser.h
+build lemon : CC lemon.c
+build parser.c : LE parser.y | lemon
