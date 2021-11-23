@@ -5,6 +5,9 @@
 #include "ast.h"
 #include <unistd.h>
 #include <string.h>
+
+#define LIST 1000
+
 void *ParseAlloc( void*(*malloc)(size_t) );
 void ParseFree(void *pParser, void(*free)(void*) );
 void Parse(void *pParser, int tokenCode, void*  token);
@@ -20,6 +23,8 @@ action ident_tok {
    n->type=IDENT;
    strncpy(n->name,ts,te-ts);
    n->name[te-ts]='\0';
+   n->a=0;
+   n->b=0;
    Parse(lparser,IDENT,n);
 }
 action semi_tok {
@@ -40,7 +45,9 @@ action times_tok {
 }
 
 action divide_tok {
-   Parse(lparser, DIVIDE, 0);
+   Node *n=malloc(sizeof(Node));
+   n->type=DIVIDE;
+   Parse(lparser, DIVIDE, n);
 }
 
 action openp_tok {
@@ -49,6 +56,11 @@ action openp_tok {
 
 action closep_tok {
    Parse(lparser, CLOSEP, 0);
+}
+
+action EOF{
+  Parse(lparser,0,0);
+  ParseFree(lparser, free );
 }
 
 action number_tok{ 
@@ -112,15 +124,16 @@ void main(int argc ,char *argv[]){
       ParseTrace(stderr,"[dbg]:");
 %% write init;
     do{
-    len=getline(&data,&len,stdin);
-//    printf("%d\n",len);
-    const char *pe,*eof=0;
-    if (len <=0 ){
-      p=pe=eof;
-    }else{
-      p=data;
-      pe = data + len;
-    }
+      len=getline(&data,&len,stdin);
+      const char *pe,*eof=0;
+      if (len >0 ){
+        p=data;
+        pe = data + len;
+      }else{
+	eof=pe;
+      }
 %% write exec;
    }while(len>0);
+      Parse(lparser,0,0);
+      ParseFree(lparser, free );
 }
